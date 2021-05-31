@@ -35,6 +35,10 @@ if(isset($_POST['updbtn'])){
     $uploadOk = 1;
     $target_dir = "uploads/";
     $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+    //check file ploaded or not
+    if($target_file==$target_dir){
+        $target_file=$prof_data['profile'];
+    }
     // Check if file already exists
     if (file_exists($target_file)) {
         $res =  "Sorry, file already exists.";
@@ -46,10 +50,13 @@ if(isset($_POST['updbtn'])){
         $uploadOk = 0;
     }
     if($uploadOk==1){
-        move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);
+     //   move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);
     }
     #update query PostgreSQL
-    $res = pg_query($db,"UPDATE user_register SET firstname='$firstname',surname='$surname',dob='$dob',gender='$gender',profile='$target_file' WHERE register_id = '$user_id' ");
+    #update profile
+   $res = pg_query($db,"UPDATE user_register SET firstname='$firstname',surname='$surname',mob_emai='$mobemail',dob='$dob',gender='$gender',profile='$target_file' WHERE register_id = '$user_id' ");
+    #update username
+   pg_query($db,"UPDATE user_login SET user_name='$mobemail' WHERE user_id = '$user_id' ");
     #get last insert id
     if ($res) {
         $res =  "Account Account Updated";
@@ -139,15 +146,15 @@ if(isset($_POST['updbtn'])){
                     <input name="fileToUpload" hidden type="file" accept="image/*" id="upload" oninput="pic.src=window.URL.createObjectURL(this.files[0])">
                     </div>
                     <div class="col-md-6">
-
+                            <label for="">Firstname</label>
                         <input type="text" name="firstname" class="form-control input" id="firstname" placeholder="First name" value="<?php echo $prof_data['firstname'] ?>">
                     </div>
                     <div class="col-md-6">
-
+                    <label for="">Surname</label>
                         <input type="text" name="surname" class="form-control input" id="surname" placeholder="Surname" value="<?php echo $prof_data['surname'] ?>">
                     </div>
                     <div class="col-12">
-
+                    <label for="">Email/Contact <span style="color:red">(If you update this the username also will be changed.) <span></label>
                         <input type="text" name="mob_email" class="form-control input" id="mobemail" placeholder="Mobile number or email address" value="<?php echo $prof_data['mob_emai'] ?>">
                     </div>
                     <!-- <div class="col-12">
